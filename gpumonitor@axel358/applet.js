@@ -16,7 +16,8 @@ class GPUUsageApplet extends Applet.TextApplet {
         this.settings.bind("decimal-places", "decimal_places", this.on_settings_changed);
         this.settings.bind("display-style", "display_style", this.on_settings_changed);
 
-        this.set_applet_label("Hello");
+        this._applet_tooltip._tooltip.set_style("text-align:left");
+
         this.update();
     }
 
@@ -28,9 +29,30 @@ class GPUUsageApplet extends Applet.TextApplet {
     update() {
         Util.spawn_async(["radeontop", "-l", "1", "-d", "-"], (output) => {
             const info = output.toString().trim().split(" ");
-            const gpu = info[8].toUpperCase() + ": " + info[9].substring(0, info[9].length - 1);
-            const vram = info[30].toUpperCase() + ": " + info[31];
-            this.set_applet_label(gpu+"\n"+vram);
+            const gpu = parseFloat(info[9]);
+            const vram = parseFloat(info[31]);
+            const vram_mb = info[32].replace(",", "");
+
+            const formatted_gpu = "GPU: " + gpu.toFixed(this.decimal_places) + "% ";
+            const formatted_vram = "VRAM: " + vram.toFixed(this.decimal_places) + "% ";
+            const formatted_vram_mb = "<b>Used VRAM: </b>" + vram_mb;
+            const formatted_gpu_long = "<b>GPU Usage: </b>" + gpu.toFixed(this.decimal_places) + "% ";
+
+            this.set_applet_tooltip(formatted_gpu_long + "\n" + formatted_vram_mb, true);
+
+            switch(this.display_style){
+            case "column":
+                this.set_applet_label(formatted_gpu + "\n" + formatted_vram);
+                break;
+            case "both":
+                this.set_applet_label(formatted_gpu + " " + formatted_vram);
+                break;
+            case "gpu":
+                this.set_applet_label(formatted_gpu);
+               break;
+            case "vram":
+                this.set_applet_label(formatted_vram);
+        }
         });
         this.update_loop_id = Mainloop.timeout_add(this.refresh_interval, Lang.bind(this, this.update));
     }
