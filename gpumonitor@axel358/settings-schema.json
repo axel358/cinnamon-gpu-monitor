@@ -10,16 +10,16 @@
         "options" : {
             "Column" : "column",
             "Both" : "both",
-            "CPU only" : "cpu",
-            "RAM only" : "mem"
+            "GPU only" : "gpu",
+            "VRAM only" : "vram"
         }
   },
  "refresh-interval" : {
     "type": "spinbutton",
-    "default" : 1000,
-    "min" : 0,
+    "default" : 1500,
+    "min" : 500,
     "max" : 5000,
-    "step" : 100,
+    "step" : 250,
     "units" : "milliseconds",
     "description": "Refresh interval",
     "tooltip": "Time between data refeshes"
