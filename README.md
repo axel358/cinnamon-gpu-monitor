@@ -1,5 +1,5 @@
-# Cinnamon GPU Monitor
-An applet to monitor GPU statistics
+# Cinnamon AMD GPU Monitor
+An applet to monitor AMD GPU statistics
 
 ![Screenshot](screenshot.png)
 
