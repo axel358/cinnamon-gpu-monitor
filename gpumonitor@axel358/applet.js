@@ -15,6 +15,7 @@ class GPUUsageApplet extends Applet.TextApplet {
         this.settings.bind("refresh-interval", "refresh_interval", this.on_settings_changed);
         this.settings.bind("decimal-places", "decimal_places", this.on_settings_changed);
         this.settings.bind("display-style", "display_style", this.on_settings_changed);
+        this.settings.bind("use-compact-label", "use_compact_label", this.on_settings_changed);
 
         this._applet_tooltip._tooltip.set_style("text-align:left");
 
@@ -33,8 +34,8 @@ class GPUUsageApplet extends Applet.TextApplet {
             const vram = parseFloat(info[31]);
             const vram_mb = info[32].replace(",", "");
 
-            const formatted_gpu = "GPU: " + gpu.toFixed(this.decimal_places) + "% ";
-            const formatted_vram = "VRAM: " + vram.toFixed(this.decimal_places) + "% ";
+            const formatted_gpu = (this.use_compact_label ? "G: " : "GPU: ")  + gpu.toFixed(this.decimal_places) + "% ";
+            const formatted_vram = (this.use_compact_label ? "V: " : "VRAM: ")  + vram.toFixed(this.decimal_places) + "% ";
             const formatted_vram_mb = "<b>Used VRAM: </b>" + vram_mb;
             const formatted_gpu_long = "<b>GPU Usage: </b>" + gpu.toFixed(this.decimal_places) + "% ";
 
