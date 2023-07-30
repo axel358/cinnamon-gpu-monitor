@@ -69,11 +69,25 @@ class GPUUsageApplet extends Applet.TextApplet {
 
             //Only retrieve additional info if the menu is open
             if (this.menu.isOpen) {
-                const vram_mb = info[32].replace(",", "");
-                const formatted_vram_mb = "<b>Used VRAM: </b>" + vram_mb;
-                const formatted_gpu_long = "<b>GPU Usage: </b>" + gpu.toFixed(this.decimal_places) + "% ";
 
-                this.info_menu_item.label.get_clutter_text().set_markup(formatted_gpu_long + "\n" + formatted_vram_mb, true);
+                Util.spawn_async(["sensors", "radeon-pci-*", "amdgpu-pci-*"], (output) => {
+                    const lines = output.split('\n');
+                    let temp = "";
+                    for (let index = 0; index < lines.length; index++) {
+                        const line = lines[index];
+
+                        if (line.includes("temp1:") || line.includes("edge:"))
+                            temp = line.split("+")[1].split(" ")[0];
+                    }
+                    const vram_mb = info[32].replace(",", "");
+                    const formatted_vram_mb = "<b>VRAM Usage: </b>" + vram_mb;
+                    const formatted_gpu_long = "<b>GPU Usage: </b>" + gpu.toFixed(this.decimal_places) + "% ";
+                    const formatted_temp = "<b>Temperature: </b>" + temp;
+
+                    this.info_menu_item.label.get_clutter_text().set_markup(formatted_gpu_long + "\n" + formatted_vram_mb + "\n" + formatted_temp, true);
+
+                });
+
             }
         });
         this.update_loop_id = Mainloop.timeout_add(this.refresh_interval, Lang.bind(this, this.update));
