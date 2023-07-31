@@ -85,9 +85,7 @@ class GPUUsageApplet extends Applet.TextApplet {
                     const formatted_temp = "<b>Temperature: </b>" + temp;
 
                     this.info_menu_item.label.get_clutter_text().set_markup(formatted_gpu_long + "\n" + formatted_vram_mb + "\n" + formatted_temp, true);
-
                 });
-
             }
         });
         this.update_loop_id = Mainloop.timeout_add(this.refresh_interval, Lang.bind(this, this.update));
