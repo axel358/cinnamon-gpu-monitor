@@ -57,7 +57,7 @@ class GPUUsageApplet extends Applet.TextApplet {
                 case "column":
                     this.set_applet_label(formatted_gpu + "\n" + formatted_vram);
                     break;
-                case "both":
+                case "row":
                     this.set_applet_label(formatted_gpu + " " + formatted_vram);
                     break;
                 case "gpu":
@@ -70,15 +70,14 @@ class GPUUsageApplet extends Applet.TextApplet {
             //Only retrieve additional info if the menu is open
             if (this.menu.isOpen) {
 
-                Util.spawn_async(["sensors", "radeon-pci-*", "amdgpu-pci-*"], (output) => {
-                    const lines = output.split('\n');
+                Util.spawn_async(["sensors", "radeon-pci-*", "amdgpu-pci-*"], output => {
                     let temp = "";
-                    for (let index = 0; index < lines.length; index++) {
-                        const line = lines[index];
 
+                    output.split('\n').forEach(line => {
                         if (line.includes("temp1:") || line.includes("edge:"))
                             temp = line.split("+")[1].split(" ")[0];
-                    }
+                    });
+
                     const vram_mb = info[32].replace(",", "");
                     const formatted_vram_mb = "<b>VRAM Usage: </b>" + vram_mb;
                     const formatted_gpu_long = "<b>GPU Usage: </b>" + gpu.toFixed(this.decimal_places) + "% ";
@@ -89,16 +88,6 @@ class GPUUsageApplet extends Applet.TextApplet {
             }
         });
         this.update_loop_id = Mainloop.timeout_add(this.refresh_interval, Lang.bind(this, this.update));
-    }
-
-    formatBytes(bytes, decimals = 1) {
-        if (!+bytes)
-            return '0 b';
-
-        const sizes = ['b', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(1024));
-
-        return `${parseFloat((bytes / Math.pow(1024, i)).toFixed(decimals))} ${sizes[i]}`;
     }
 
     on_applet_removed_from_panel() {

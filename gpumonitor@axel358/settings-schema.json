@@ -9,7 +9,7 @@
       "description": "Display style",
       "options": {
          "Column": "column",
-         "Both": "both",
+         "Side by side": "row",
          "GPU only": "gpu",
          "VRAM only": "vram"
       }
