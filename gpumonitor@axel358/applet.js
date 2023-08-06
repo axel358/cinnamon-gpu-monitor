@@ -46,9 +46,12 @@ class GPUUsageApplet extends Applet.TextApplet {
 
     update() {
         Util.spawn_async(["radeontop", "-l", "1", "-d", "-"], (output) => {
-            const info = output.toString().trim().split(" ");
-            const gpu = parseFloat(info[9]);
-            const vram = parseFloat(info[31]);
+            const gpu_regex = /gpu\s([\d.]+)%/i;
+            const vram_regex = /vram\s([\d.]+)%\s([\d.]+)([kmgt]b|b)\b/i;
+
+            const gpu = parseFloat(output.match(gpu_regex)[1]);
+            const vram_matches = output.match(vram_regex);
+            const vram = parseFloat(vram_matches[1]);
 
             const formatted_gpu = (this.use_compact_label ? "G: " : "GPU: ") + gpu.toFixed(this.decimal_places) + "% ";
             const formatted_vram = (this.use_compact_label ? "V: " : "VRAM: ") + vram.toFixed(this.decimal_places) + "% ";
@@ -71,15 +74,11 @@ class GPUUsageApplet extends Applet.TextApplet {
             if (this.menu.isOpen) {
 
                 Util.spawn_async(["sensors", "radeon-pci-*", "amdgpu-pci-*"], output => {
-                    let temp = "";
+                    const temp_regex = /(temp1:|edge:)\s+\+([\d.]+°C)/i;
+                    const temp = output.match(temp_regex)[2];
 
-                    output.split('\n').forEach(line => {
-                        if (line.includes("temp1:") || line.includes("edge:"))
-                            temp = line.split("+")[1].split(" ")[0];
-                    });
-
-                    const vram_mb = info[32].replace(",", "");
-                    const formatted_vram_mb = "<b>VRAM Usage: </b>" + vram_mb;
+                    const vram_mb = parseFloat(vram_matches[2]);
+                    const formatted_vram_mb = "<b>VRAM Usage: </b>" + vram_mb.toFixed(this.decimal_places) + vram_matches[3].toUpperCase();
                     const formatted_gpu_long = "<b>GPU Usage: </b>" + gpu.toFixed(this.decimal_places) + "% ";
                     const formatted_temp = "<b>Temperature: </b>" + temp;
 
