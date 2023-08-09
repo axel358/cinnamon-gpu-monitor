@@ -17,6 +17,7 @@ class GPUUsageApplet extends Applet.TextApplet {
         this.settings.bind("decimal-places", "decimal_places", this.on_settings_changed);
         this.settings.bind("display-style", "display_style", this.on_settings_changed);
         this.settings.bind("use-compact-label", "use_compact_label", this.on_settings_changed);
+        this.settings.bind("font-size", "font_size", this.update_font_size);
 
         this.set_applet_tooltip("Click for more details");
 
@@ -32,6 +33,7 @@ class GPUUsageApplet extends Applet.TextApplet {
         item.connect('activate', () => Util.spawnCommandLine("gnome-terminal -t Radeontop -- radeontop"));
         this.menu.addMenuItem(item);
 
+        this.update_font_size();
         this.update();
     }
 
@@ -87,6 +89,10 @@ class GPUUsageApplet extends Applet.TextApplet {
             }
         });
         this.update_loop_id = Mainloop.timeout_add(this.refresh_interval, Lang.bind(this, this.update));
+    }
+
+    update_font_size() {
+        this._applet_label.style = "font-size: " + this.font_size + "%;";
     }
 
     on_applet_removed_from_panel() {
