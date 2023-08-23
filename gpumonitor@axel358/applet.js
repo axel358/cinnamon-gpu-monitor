@@ -32,6 +32,7 @@ class GPUUsageApplet extends Applet.TextApplet {
         const item = new PopupMenu.PopupMenuItem(_("Launch Radeontop"));
         item.connect('activate', () => Util.spawnCommandLine("gnome-terminal -t Radeontop -- radeontop"));
         this.menu.addMenuItem(item);
+        this.set_applet_label("radeontop not installed");
 
         this.update_font_size();
         this.update();
