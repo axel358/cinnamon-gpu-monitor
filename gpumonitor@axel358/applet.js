@@ -73,6 +73,18 @@ class GPUUsageApplet extends Applet.TextApplet {
                     this.set_applet_label(formatted_vram);
             }
 
+            // Add temperature to taskbar
+            Util.spawn_async(
+                ["sensors", "radeon-pci-*", "amdgpu-pci-*"],
+                (output) => {
+                    const temperature_regex = /(temp1:|edge:)\s+\+([\d.]+°C)/i;
+                    const temperature = output.match(temperature_regex)[2];
+                    if (this.display_style === "temp") {
+                        this.set_applet_label("GPU: " + temperature);
+                    }
+                }
+            );
+
             //Only retrieve additional info if the menu is open
             if (this.menu.isOpen) {
 
@@ -81,11 +93,13 @@ class GPUUsageApplet extends Applet.TextApplet {
                     const temp = output.match(temp_regex)[2];
 
                     const vram_mb = parseFloat(vram_matches[2]);
-                    const formatted_vram_mb = "<b>VRAM Usage: </b>" + vram_mb.toFixed(this.decimal_places) + vram_matches[3].toUpperCase();
-                    const formatted_gpu_long = "<b>GPU Usage: </b>" + gpu.toFixed(this.decimal_places) + "% ";
-                    const formatted_temp = "<b>Temperature: </b>" + temp;
+                    const formatted_vram_mb = "<b>VRAM Usage: </b>" + " " + vram_mb.toFixed(this.decimal_places) + " " + vram_matches[3].toUpperCase();
+                    const formatted_gpu_long = "<b>GPU Usage: </b>" + " " + gpu.toFixed(this.decimal_places) + " " + "% ";
+                    const formatted_temp = "<b>Temperature: </b>" + " " + temp;
 
-                    this.info_menu_item.label.get_clutter_text().set_markup(formatted_gpu_long + "\n" + formatted_vram_mb + "\n" + formatted_temp, true);
+                    this.info_menu_item.label.get_clutter_text().set_markup(formatted_gpu_long + "\n\n" + formatted_vram_mb + "\n\n" + formatted_temp,
+                        true
+                    );
                 });
             }
         });
