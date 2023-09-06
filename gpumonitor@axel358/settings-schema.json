@@ -11,7 +11,8 @@
          "Column": "column",
          "Side by side": "row",
          "GPU only": "gpu",
-         "VRAM only": "vram"
+         "VRAM only": "vram",
+         "TEMP only": "temp"
       }
    },
    "use-compact-label": {
